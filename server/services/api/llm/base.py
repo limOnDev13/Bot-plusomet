@@ -13,6 +13,7 @@ class Prompt(object):
     text: str
 
     def to_dict(self) -> Dict[str, str]:
+        """Return dict with fields from class."""
         return {"role": self.role, "text": self.text}
 
 
