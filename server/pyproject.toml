@@ -17,3 +17,25 @@ dev = [
     "isort>=6.0.0",
     "mypy>=1.15.0",
 ]
+
+[tool.black]
+line-length = 88
+force-exclude = '''
+/(
+    \.venv
+)
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_gitignore = true
+skip_glob = [
+    "**/.venv/*"
+]
+
+[tool.mypy]
+exclude = [
+    ".venv",
+]
+ignore_missing_imports = true
