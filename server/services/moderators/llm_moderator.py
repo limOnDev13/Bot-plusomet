@@ -33,6 +33,11 @@ class LLMModerator(object):
     """The class responsible for moderation of messages using LLM."""
 
     def __init__(self, llm_api: BaseLLMAPI):
+        """
+        Init class.
+
+        :param llm_api: BaseLLMAPI object.
+        """
         self.__llm_api = llm_api
 
     def moderate(self, message: str) -> ModerationResult:
@@ -42,8 +47,10 @@ class LLMModerator(object):
         :param message: User message.
         :return: ModerationResult
         :raise PromptError: If LLM returned more than 1 answer.
-        :raise IncorrectEncodingError: If LLM returned an answer that cannot be decoded from JSON.
-        :raise IncorrectFormatError: If LLM returned an answer that cannot be converted to a ModerationResult
+        :raise IncorrectEncodingError: If LLM returned an answer
+        that cannot be decoded from JSON.
+        :raise IncorrectFormatError: If LLM returned an answer
+        that cannot be converted to a ModerationResult
         """
         prompts: List[Prompt] = [
             PROMPTS["moderation_prompt"],
