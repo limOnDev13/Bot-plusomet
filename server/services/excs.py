@@ -84,7 +84,7 @@ class PromptError(Exception):
 
 
 class IncorrectEncodingError(PromptError):
-    """The exc responsible for errors related to incorrect encoding of the LLM answer."""
+    """The exc responsible for errors related to invalid encoding of the LLM answer."""
 
     pass
 
@@ -118,3 +118,4 @@ class IncorrectFormatError(PromptError):
             return "\n".join(
                 (res_str, f"Expected:\n{self.expected}\nReceived:\n{self.received}")
             )
+        return res_str
