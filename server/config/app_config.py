@@ -9,7 +9,6 @@ class YandexGPTConfig(object):
     """Config for work with YandexGPT API."""
 
     oauth_token: str
-    iam_token: str
     catalog_id: str
     temperature: float
     max_tokens: int
@@ -29,7 +28,6 @@ def get_config() -> Config:
         debug=os.getenv("SERVER_DEBUG", "0") == "1",
         yandex_gpt=YandexGPTConfig(
             oauth_token=os.getenv("YANDEXGPT_OAUTH", ""),
-            iam_token=os.getenv("YANDEXGPT_IAM", ""),
             catalog_id=os.getenv("YANDEXGPT_CATALOG_ID", ""),
             temperature=float(os.getenv("YANDEXGPT_TEMPERATURE", 0.3)),
             max_tokens=int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000)),
