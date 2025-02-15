@@ -7,7 +7,7 @@ import requests
 from requests import Response
 
 from server.config.app_config import Config
-from server.services.excs import APIException
+from server.services.excs import APIAuthException
 
 from .base import BaseLLMAPI, Prompt
 
@@ -67,8 +67,8 @@ class YandexGPTAPI(BaseLLMAPI):
 
         :param chat: Messages history.
         :return: A list of responses from YandexGPT in the form of prompts.
-        :raise APIException: If response status code is not 200. If APIException.status_code == 401,
-        use auth method for updating IAM token.
+        :raise APIException: If response status code is not 200.
+        If APIException.status_code == 401, use auth method for updating IAM token.
         """
         data = self.__get_data()
         data["messages"] = [prompt.to_dict() for prompt in chat]
@@ -80,9 +80,8 @@ class YandexGPTAPI(BaseLLMAPI):
         )
 
         if response.status_code != 200:
-            raise APIException(
-                service=self.service_name,
-                status_code=response.status_code,
+            raise APIAuthException(
+                service_name=self.service_name,
                 json_str=response.json(),
             )
 
