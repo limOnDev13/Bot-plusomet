@@ -17,8 +17,10 @@ logger = getLogger("main.api.YandexGPT")
 class YandexGPTAPI(BaseLLMAPI):
     """A class for working with YandexGPT."""
 
+    service_name: str = "YandexGPT"
     refresh_url: str = "https://iam.api.cloud.yandex.net/iam/v1/tokens"
     base_url: str = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
+    __iam_token: str = ""
 
     def __init__(self, config: Config):
         """
@@ -27,17 +29,29 @@ class YandexGPTAPI(BaseLLMAPI):
         :param config: app config.
         """
         self.__oauth_token = config.yandex_gpt.oauth_token
-        self.__iam_token = config.yandex_gpt.iam_token
         self.__catalog_id = config.yandex_gpt.catalog_id
         self.__temperature = config.yandex_gpt.temperature
         self.__max_tokens = config.yandex_gpt.max_tokens
 
-        self.__headers: Dict[str, Any] = {
+    def auth(self) -> None:
+        """Get IAM token."""
+        resp: Response = requests.post(
+            self.refresh_url, json={"yandexPassportOauthToken": self.__oauth_token}
+        )
+        # Update the IAM token for all instances
+        YandexGPTAPI.__iam_token = resp.json()["iamToken"]
+
+    def __get_headers(self) -> Dict[str, str]:
+        """Get headers."""
+        return {
             "Accept": "application/json",
             "Authorization": f"Bearer {self.__iam_token}",
             "x-data-logging-enabled": "false",
         }
-        self.__data: Dict[str, Any] = {
+
+    def __get_data(self) -> Dict[str, Any]:
+        """Get data for POST request."""
+        return {
             "modelUri": f"gpt://{self.__catalog_id}/yandexgpt",
             "completionOptions": {
                 "stream": False,
@@ -47,30 +61,27 @@ class YandexGPTAPI(BaseLLMAPI):
             },
         }
 
-    def auth(self) -> None:
-        """Get IAM token."""
-        resp: Response = requests.post(
-            self.refresh_url, data={"yandexPassportOauthToken": self.__oauth_token}
-        )
-        print(resp.json())
-
     def send_prompts(self, chat: List[Prompt]) -> List[Prompt]:
         """
         Send prompts to YandexGPT.
 
         :param chat: Messages history.
         :return: A list of responses from YandexGPT in the form of prompts.
+        :raise APIException: If response status code is not 200. If APIException.status_code == 401,
+        use auth method for updating IAM token.
         """
-        self.__data["messages"] = [prompt.to_dict() for prompt in chat]
+        data = self.__get_data()
+        data["messages"] = [prompt.to_dict() for prompt in chat]
         logger.debug("Sending prompts")
         response: Response = requests.post(
             self.base_url,
-            headers=self.__headers,
-            json=self.__data,
+            headers=self.__get_headers(),
+            json=data,
         )
+
         if response.status_code != 200:
             raise APIException(
-                service="YandexGPT",
+                service=self.service_name,
                 status_code=response.status_code,
                 json_str=response.json(),
             )
