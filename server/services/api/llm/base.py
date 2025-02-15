@@ -10,6 +10,11 @@ class BaseLLMAPI(ABC):
     """The basic interface for working with LLM."""
 
     @abstractmethod
+    def auth(self) -> None:
+        """Auth to LLM API."""
+        pass
+
+    @abstractmethod
     def send_prompts(self, chat: List[Prompt]) -> List[Prompt]:
         """Send messages to LLM."""
         pass
