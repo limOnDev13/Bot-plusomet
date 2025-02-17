@@ -1,1 +1,1 @@
-"""The package responsible for pydantic schemes."""
+"""The package responsible for data structures."""

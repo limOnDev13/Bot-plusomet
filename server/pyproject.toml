@@ -5,7 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.115.8",
+    "celery[gevent]>=5.4.0",
+    "python-dotenv>=1.0.1",
+    "redis>=5.2.1",
+    "requests>=2.32.3",
 ]
 
 [dependency-groups]
@@ -16,6 +19,8 @@ dev = [
     "flake8-eradicate>=1.5.0",
     "isort>=6.0.0",
     "mypy>=1.15.0",
+    "pytest>=8.3.4",
+    "types-requests>=2.32.0.20241016",
 ]
 
 [tool.black]
