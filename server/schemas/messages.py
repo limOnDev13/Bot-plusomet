@@ -1,3 +1,5 @@
+"""The module responsible for schemas for working with messages."""
+
 from dataclasses import dataclass
 
 
