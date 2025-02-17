@@ -2,18 +2,19 @@
 
 from typing import List
 
-from server.services.moderators.llm_moderator import LLMModerator, ModerationResult
+from server.schemas.messages import MessageSchema, ModerationResultSchema
+from server.services.moderators.llm_moderator import LLMModerator
 
 
 def test_llm_moderator(
     llm_moderator: LLMModerator,
-    user_msgs: List[str],
-    llm_generated_msgs: List[str],
-    toxic_msgs: List[str],
+    user_msgs: List[MessageSchema],
+    llm_generated_msgs: List[MessageSchema],
+    toxic_msgs: List[MessageSchema],
 ) -> None:
     """Test class LLMModerator and method moderate."""
     for msg in user_msgs:
-        result: ModerationResult = llm_moderator.moderate(msg)
+        result: ModerationResultSchema = llm_moderator.moderate(msg)
         print(msg)
         assert result.generated_by_llm is False
         assert result.toxic is False
