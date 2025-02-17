@@ -1,11 +1,12 @@
 """The module responsible for moderation through LLM."""
 
 import json
-from dataclasses import dataclass
+from dataclasses import asdict
 from json import JSONDecodeError
 from logging import getLogger
-from typing import Dict, List
+from typing import Any, Dict, List
 
+from server.schemas.messages import MessageSchema, ModerationResultSchema
 from server.services.api.llm.base import BaseLLMAPI
 from server.services.excs import (
     IncorrectEncodingError,
@@ -17,18 +18,6 @@ from server.services.prompts import PROMPTS, Prompt
 logger = getLogger("main.services.moderator")
 
 
-@dataclass
-class ModerationResult(object):
-    """The structure of the LLM response after message moderation."""
-
-    generated_by_llm: bool
-    toxic: bool
-
-    def to_dict(self) -> Dict[str, bool]:
-        """Return the object representation as a dictionary."""
-        return {"generated_by_llm": self.generated_by_llm, "toxic": self.toxic}
-
-
 class LLMModerator(object):
     """The class responsible for moderation of messages using LLM."""
 
@@ -38,9 +27,9 @@ class LLMModerator(object):
 
         :param llm_api: BaseLLMAPI object.
         """
-        self.__llm_api = llm_api
+        self.llm_api = llm_api
 
-    def moderate(self, message: str) -> ModerationResult:
+    def moderate(self, message: MessageSchema) -> ModerationResultSchema:
         """
         Moderate msg.
 
@@ -54,16 +43,20 @@ class LLMModerator(object):
         """
         prompts: List[Prompt] = [
             PROMPTS["moderation_prompt"],
-            Prompt(role="user", text=message),
+            Prompt(role="user", text=message.text),
         ]
-        answers: List[Prompt] = self.__llm_api.send_prompts(prompts)
+        answers: List[Prompt] = self.llm_api.send_prompts(prompts)
 
         if len(answers) != 1:
             raise PromptError(msg="LLM returned more than 1 answer.", prompts=prompts)
         answer = answers[0].text.strip("```").strip()
+        answer_dict: Dict[str, Any] = dict()
 
         try:
-            return ModerationResult(**json.loads(answer))
+            answer_dict = json.loads(answer)
+            answer_dict["msg_id"] = message.id
+
+            return ModerationResultSchema(**answer_dict)
         except JSONDecodeError:
             raise IncorrectEncodingError(
                 msg="LLM returned an answer that cannot be decoded from JSON.",
@@ -73,6 +66,15 @@ class LLMModerator(object):
             raise IncorrectFormatError(
                 msg="LLM returned an answer in the wrong format",
                 prompts=prompts,
-                expected=json.dumps(ModerationResult(True, True).to_dict(), indent=2),
-                received=json.dumps(json.loads(answer), indent=2),
+                expected=json.dumps(
+                    asdict(
+                        ModerationResultSchema(
+                            msg_id=message.id,
+                            generated_by_llm=True,
+                            toxic=True,
+                        )
+                    ),
+                    indent=2,
+                ),
+                received=json.dumps(answer_dict, indent=2),
             )
