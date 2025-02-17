@@ -7,7 +7,7 @@ import requests
 from requests import Response
 
 from server.config.app_config import Config
-from server.services.excs import APIAuthException
+from server.services.excs import APIAuthException, APIException, TooManyRequests
 
 from .base import BaseLLMAPI, Prompt
 
@@ -79,9 +79,18 @@ class YandexGPTAPI(BaseLLMAPI):
             json=data,
         )
 
-        if response.status_code != 200:
+        if response.status_code == 401:
             raise APIAuthException(
+                service_name=self.service_name, json_str=response.json()
+            )
+        elif response.status_code == 429:
+            raise TooManyRequests(
+                service_name=self.service_name, json_str=response.json()
+            )
+        if response.status_code != 200:
+            raise APIException(
                 service_name=self.service_name,
+                status_code=response.status_code,
                 json_str=response.json(),
             )
 
