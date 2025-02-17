@@ -2,6 +2,7 @@
 
 import os
 from dataclasses import dataclass
+from typing import List
 
 
 @dataclass
@@ -15,11 +16,22 @@ class YandexGPTConfig(object):
 
 
 @dataclass
+class CeleryConfig(object):
+    """Config for Celery."""
+
+    broker: str
+    backend: str
+    accept_content: List[str]
+    result_expires: int
+
+
+@dataclass
 class Config(object):
     """Config class for the app."""
 
     debug: bool
     yandex_gpt: YandexGPTConfig
+    celery: CeleryConfig
 
 
 def get_config() -> Config:
@@ -31,5 +43,11 @@ def get_config() -> Config:
             catalog_id=os.getenv("YANDEXGPT_CATALOG_ID", ""),
             temperature=float(os.getenv("YANDEXGPT_TEMPERATURE", 0.3)),
             max_tokens=int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000)),
+        ),
+        celery=CeleryConfig(
+            broker=os.getenv("CELERY_BROKER"),
+            backend=os.getenv("CELERY_BACKEND"),
+            accept_content=os.getenv("CELERY_ACCEPT_CONTENT").split(","),
+            result_expires=int(os.getenv("CELERY_RESULT_EXPIRES"), 3600),
         ),
     )
