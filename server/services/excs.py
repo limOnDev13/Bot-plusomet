@@ -6,38 +6,7 @@ from typing import Any, List, Optional
 from server.services.prompts import Prompt
 
 
-class APIAuthException(Exception):
-    """The exception is for errors related to auth on third-party APIs."""
-
-    def __init__(
-        self,
-        service_name: str,
-        msg: Optional[str] = None,
-        json_str: Optional[str] = None,
-    ):
-        """
-        Init class.
-
-        :param service_name: Name of API service.
-        :param msg: Message from server.
-        :param json_str: JSON from server.
-        """
-        self.service_name = service_name
-        self.msg = msg
-        self.json_str = json_str
-
-    def __str__(self) -> str:
-        """Return str of exception."""
-        res_str: str = f"Service: {self.service_name}"
-        if self.msg:
-            res_str += ", ".join((res_str, self.msg))
-        if self.json_str:
-            res_str += ", ".join((res_str, json.dumps(self.json_str, indent=2)))
-
-        return res_str
-
-
-class APIException(APIAuthException):
+class APIException(Exception):
     """The exception is for errors from third-party APIs."""
 
     def __init__(
@@ -55,14 +24,62 @@ class APIException(APIAuthException):
         :param msg: Message from server.
         :param json_str: JSON from server.
         """
-        super().__init__(service_name, msg, json_str)
+        self.service_name = service_name
+        self.msg = msg
+        self.json_str = json_str
         self.status_code = status_code
 
     def __str__(self) -> str:
         """Return str of exception."""
-        res_str: str = super().__str__()
+        res_str: str = f"Service: {self.service_name}\nStatus code: {self.status_code}"
+        if self.msg:
+            res_str += ", ".join((res_str, self.msg))
+        if self.json_str:
+            res_str += ", ".join((res_str, json.dumps(self.json_str, indent=2)))
 
-        return ", ".join((f"Status code: {self.status_code}", res_str))
+        return res_str
+
+
+class APIAuthException(APIException):
+    """The exception is for errors related to auth on third-party APIs."""
+
+    def __init__(
+        self,
+        service_name: str,
+        status_code: int = 401,
+        msg: Optional[str] = None,
+        json_str: Optional[str] = None,
+    ):
+        """
+        Init class.
+
+        :param service_name: Name of API service.
+        :param status_code: Status code.
+        :param msg: Message from server.
+        :param json_str: JSON from server.
+        """
+        super().__init__(service_name, status_code, msg, json_str)
+
+
+class TooManyRequests(APIException):
+    """Exception responsible for code error 429 (Too Many Requests)."""
+
+    def __init__(
+        self,
+        service_name: str,
+        status_code: int = 429,
+        msg: Optional[str] = None,
+        json_str: Optional[str] = None,
+    ):
+        """
+        Init class.
+
+        :param service_name: Name of API service.
+        :param status_code: Status code.
+        :param msg: Message from server.
+        :param json_str: JSON from server.
+        """
+        super().__init__(service_name, status_code, msg, json_str)
 
 
 class PromptError(Exception):
