@@ -19,8 +19,8 @@ class YandexGPTConfig(object):
 class CeleryConfig(object):
     """Config for Celery."""
 
-    broker: str
-    backend: str
+    broker_url: str
+    result_backed: str
     accept_content: List[str]
     result_expires: int
 
@@ -45,8 +45,8 @@ def get_config() -> Config:
             max_tokens=int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000)),
         ),
         celery=CeleryConfig(
-            broker=os.getenv("CELERY_BROKER"),
-            backend=os.getenv("CELERY_BACKEND"),
+            broker_url=os.getenv("CELERY_BROKER"),
+            result_backed=os.getenv("CELERY_BACKEND"),
             accept_content=os.getenv("CELERY_ACCEPT_CONTENT").split(","),
             result_expires=int(os.getenv("CELERY_RESULT_EXPIRES"), 3600),
         ),
