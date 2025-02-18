@@ -1,6 +1,7 @@
 """The module responsible for custom exceptions."""
 
 import json
+from dataclasses import asdict
 from typing import Any, List, Optional
 
 from server.services.prompts import Prompt
@@ -97,13 +98,33 @@ class PromptError(Exception):
 
     def __str__(self) -> str:
         """Return str of exception."""
-        return f"{self.msg}\nChat history:\n{json.dumps(self.prompts, indent=2)}"
+        return (
+            f"{self.msg}\n"
+            f"Chat history:\n"
+            f"{json.dumps([asdict(prompt) for prompt in self.prompts], indent=2)}"
+        )
 
 
 class IncorrectEncodingError(PromptError):
     """The exc responsible for errors related to invalid encoding of the LLM answer."""
 
-    pass
+    def __init__(
+        self, prompts: List[Prompt], answer: Prompt, msg: Optional[str] = None
+    ):
+        """
+        Init class.
+
+        :param prompts: Chat history.
+        :param answer: LLM answer.
+        :param msg: Exception message.
+        """
+        super().__init__(prompts, msg)
+        self.answer = answer
+
+    def __str__(self) -> str:
+        """Return str of exception."""
+        exc_text: str = super().__str__()
+        return "\n".join((exc_text, f"Answer:\n{self.answer.text}"))
 
 
 class IncorrectFormatError(PromptError):
