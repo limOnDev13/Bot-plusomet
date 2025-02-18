@@ -63,4 +63,4 @@ jobs:
           YANDEXGPT_TEMPERATURE: ${{ secrets.YANDEXGPT_TEMPERATURE }}
           YANDEXGPT_MAX_TOKENS: ${{ secrets.YANDEXGPT_MAX_TOKENS }}
         run: |
-          pytest .
+          uv run pytest .
