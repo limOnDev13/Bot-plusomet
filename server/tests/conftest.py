@@ -11,6 +11,7 @@ from server.schemas.messages import MessageSchema
 from server.services.api.llm.base import BaseLLMAPI
 from server.services.api.llm.yandex_gpt import YandexGPTAPI
 from server.services.moderators.llm_moderator import LLMModerator
+from server.services.prompts import Prompt
 
 
 @pytest.fixture(scope="session")
@@ -23,13 +24,21 @@ def config() -> Config:
 @pytest.fixture(scope="session")
 def llm_api(config: Config) -> BaseLLMAPI:
     """Get BaseLLMAPI object."""
-    return YandexGPTAPI(config)
+    llm_api_ = YandexGPTAPI(config)
+    llm_api_.auth()
+    return llm_api_
 
 
 @pytest.fixture(scope="session")
 def llm_moderator(llm_api: BaseLLMAPI) -> LLMModerator:
     """Get LLMModerator object."""
     return LLMModerator(llm_api)
+
+
+@pytest.fixture(scope="session")
+def simple_prompt() -> Prompt:
+    """Get simple prompt."""
+    return Prompt(role="user", text="Привет! Расскажи что-нибудь о себе.")
 
 
 @pytest.fixture(scope="function")

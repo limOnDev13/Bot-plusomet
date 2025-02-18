@@ -4,7 +4,7 @@ import json
 import random
 import time
 from dataclasses import asdict
-from json import JSONDecodeError
+from json.decoder import JSONDecodeError
 from logging import getLogger
 from typing import Any, Dict, List, Tuple
 
@@ -37,6 +37,24 @@ class LLMModerator(object):
             raise ValueError(f"{random_delay[0]=} must be no more {random_delay[1]=}")
         self.__random_delay = random_delay
 
+    @classmethod
+    def __process_llm_answer(
+        cls, prompts: List[Prompt], answer: Prompt, message: MessageSchema
+    ) -> Dict[str, Any]:
+        """Decode answer from LLM."""
+        answer_json_str: str = answer.text.strip("```").strip()
+
+        try:
+            processed_answer: Dict[str, Any] = json.loads(answer_json_str)
+            processed_answer["msg_id"] = message.id
+            return processed_answer
+        except JSONDecodeError:
+            raise IncorrectEncodingError(
+                prompts=prompts,
+                answer=answer,
+                msg="LLM returned an answer that cannot be decoded from JSON.",
+            )
+
     def moderate(self, message: MessageSchema) -> ModerationResultSchema:
         """
         Moderate msg.
@@ -57,34 +75,20 @@ class LLMModerator(object):
 
         if len(answers) != 1:
             raise PromptError(msg="LLM returned more than 1 answer.", prompts=prompts)
-        answer = answers[0].text.strip("```").strip()
-        answer_dict: Dict[str, Any] = dict()
+        processed_answer: Dict[str, Any] = self.__process_llm_answer(
+            prompts, answers[0], message
+        )
 
         try:
-            answer_dict = json.loads(answer)
-            answer_dict["msg_id"] = message.id
-
-            return ModerationResultSchema(**answer_dict)
-        except JSONDecodeError:
-            raise IncorrectEncodingError(
-                msg="LLM returned an answer that cannot be decoded from JSON.",
-                prompts=prompts,
-            )
+            return ModerationResultSchema(**processed_answer)
         except TypeError:
             raise IncorrectFormatError(
-                msg="LLM returned an answer in the wrong format",
                 prompts=prompts,
+                msg="LLM returned an answer in the wrong format",
                 expected=json.dumps(
-                    asdict(
-                        ModerationResultSchema(
-                            msg_id=message.id,
-                            generated_by_llm=True,
-                            toxic=True,
-                        )
-                    ),
-                    indent=2,
+                    asdict(ModerationResultSchema("1", True, True)), indent=4
                 ),
-                received=json.dumps(answer_dict, indent=2),
+                received=json.dumps(processed_answer, indent=4),
             )
         finally:
             time.sleep(random.uniform(*self.__random_delay))
