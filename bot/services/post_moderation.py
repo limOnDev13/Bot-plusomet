@@ -1,6 +1,7 @@
 """The module responsible for processing the results of moderation."""
 
 from typing import List
+from logging import getLogger
 
 from aiogram import Bot
 from aiogram.types.reaction_type_custom_emoji import ReactionTypeCustomEmoji
@@ -10,6 +11,8 @@ from producer_consumer.moderation_results.base import BaseModerationResultConsum
 from schemas.messages import ModerationResultSchema
 
 from .reactions import REACTION
+
+logger = getLogger("bot.services")
 
 
 class PostModerationManager(object):
@@ -80,9 +83,11 @@ class PostModerationManager(object):
         """
         while True:
             # extract
+            logger.debug("Extract moderation result.")
             moderation_result: ModerationResultSchema = (
                 await self.__mod_res_consumer.extract()
             )
 
             # process
+            logger.debug("Set reaction.")
             await self.__set_reaction(moderation_result)

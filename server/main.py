@@ -1,7 +1,7 @@
 """The module responsible for starting moderation."""
 
 import asyncio
-import logging
+from logging import getLogger
 import logging.config
 from typing import Any, Dict
 
@@ -27,6 +27,7 @@ async def main():
     # logging
     log_config: Dict[str, Any] = get_log_config(config)
     logging.config.dictConfig(log_config)
+    logger = getLogger("main")
 
     # LLM API
     llm_api: YandexGPTAPI = YandexGPTAPI(config)
@@ -53,6 +54,7 @@ async def main():
         )
 
         # run moderation
+        logger.info("Start moderation.")
         await moderation_manager.run()
 
     finally:

@@ -3,7 +3,7 @@
 import json
 from dataclasses import asdict
 
-import redis
+import redis.asyncio
 
 from schemas.messages import MessageSchema
 

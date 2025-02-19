@@ -35,6 +35,7 @@ class YandexGPTAPI(BaseLLMAPI):
 
     def auth(self) -> None:
         """Get IAM token."""
+        logger.debug("Try auth on %s.", self.service_name)
         resp: Response = requests.post(
             self.refresh_url, json={"yandexPassportOauthToken": self.__oauth_token}
         )
@@ -72,7 +73,7 @@ class YandexGPTAPI(BaseLLMAPI):
         """
         data = self.__get_data()
         data["messages"] = [prompt.to_dict() for prompt in chat]
-        logger.debug("Sending prompts")
+        logger.debug("Send prompts")
         response: Response = requests.post(
             self.base_url,
             headers=self.__get_headers(),

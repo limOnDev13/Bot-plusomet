@@ -52,6 +52,7 @@ class LLMModerator(BaseModerator):
         cls, prompts: List[Prompt], answer: Prompt, message: MessageSchema
     ) -> Dict[str, Any]:
         """Decode answer from LLM."""
+        logger.debug("Decode llm answer.")
         answer_json_str: str = answer.text.strip("```").strip()
 
         try:
@@ -77,6 +78,7 @@ class LLMModerator(BaseModerator):
         :raise IncorrectFormatError: If LLM returned an answer
         that cannot be converted to a ModerationResult
         """
+        logger.debug("Start moderating message.")
         prompts: List[Prompt] = [
             PROMPTS["moderation_prompt"],
             Prompt(role="user", text=message.text),
@@ -111,9 +113,11 @@ class LLMModerator(BaseModerator):
         """
         self.__retries += 1
         if retry_backoff:
+            logger.debug("Make delay %s.", str(self.__delay))
             time.sleep(self.__delay)
             self.__delay *= self.__delay_dominator
         else:
+            logger.debug("Make delay %s.", str(self.__default_delay))
             time.sleep(self.__default_delay)
 
     def moderate(self, message: MessageSchema) -> ModerationResultSchema:
@@ -134,6 +138,7 @@ class LLMModerator(BaseModerator):
         :return: Result of moderation.
         """
         try:
+            logger.debug("Start process moderating the message.")
             result: ModerationResultSchema = self.__moderation_process(message)
             self.__sleep()
         except APIAuthException as exc:

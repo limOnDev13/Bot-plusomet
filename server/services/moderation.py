@@ -43,10 +43,12 @@ class ModerationManager(object):
         """
         while True:
             # extract
+            logger.debug("Extract message.")
             msg: MessageSchema = await self.__msg_consumer.extract()
 
             # moderate
             try:
+                logger.debug("Moderate message.")
                 moderation_result: ModerationResultSchema = self.__moderator.moderate(
                     msg
                 )
@@ -66,4 +68,5 @@ class ModerationManager(object):
                 logger.error("Unexpected error.\nexc: %s", str(exc))
             else:
                 # upload
+                logger.debug("Upload moderation result.")
                 await self.__mod_res_producer.upload(moderation_result)

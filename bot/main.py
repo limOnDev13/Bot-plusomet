@@ -63,7 +63,7 @@ async def main():
 
         # launch bot and launch post-moderation
         await bot.delete_webhook(drop_pending_updates=True)
-        logger.info("Startup")
+        logger.info("Start bot.")
         await asyncio.gather(dp.start_polling(bot), post_moderation_manager.run())
     finally:
         if client is not None:
