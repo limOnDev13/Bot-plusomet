@@ -6,6 +6,7 @@ import logging.config
 from typing import Any, Dict
 
 import redis.asyncio
+from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 
@@ -22,6 +23,7 @@ from .services.post_moderation import PostModerationManager
 async def main():
     """Config and launch bot."""
     # config
+    load_dotenv()
     config: BotConfig = get_config()
 
     # logging
