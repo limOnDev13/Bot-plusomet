@@ -16,6 +16,13 @@ class YandexGPTConfig(object):
 
 
 @dataclass
+class RedisConfig(object):
+    """Config class for Redis."""
+
+    url: str
+
+
+@dataclass
 class ModerationConfig(object):
     """Config for moderation."""
 
@@ -31,6 +38,7 @@ class Config(object):
     debug: bool
     moderation_config: ModerationConfig
     yandex_gpt: YandexGPTConfig
+    redis: RedisConfig
 
 
 def __moderation_random_delay() -> Tuple[float, float]:
@@ -68,5 +76,8 @@ def get_config() -> Config:
             catalog_id=os.getenv("YANDEXGPT_CATALOG_ID", ""),
             temperature=abs(float(os.getenv("YANDEXGPT_TEMPERATURE", 0.3))),
             max_tokens=abs(int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000))),
+        ),
+        redis=RedisConfig(
+            url=os.getenv("REDIS_URL", ""),
         ),
     )
