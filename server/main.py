@@ -41,7 +41,7 @@ async def main():
     client = None
     pool = None
     try:
-        pool = redis.asyncio.ConnectionPool.from_url("redis://localhost")
+        pool = redis.asyncio.ConnectionPool.from_url(config.redis.url)
         client = redis.asyncio.Redis(connection_pool=pool)
 
         msg_consumer = RedisMessageConsumer(client)
