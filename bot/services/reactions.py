@@ -2,9 +2,9 @@
 
 from typing import Dict
 
-from aiogram.types.reaction_type_custom_emoji import ReactionTypeCustomEmoji
+from aiogram.types.reaction_type_emoji import ReactionTypeEmoji
 
-REACTION: Dict[str, ReactionTypeCustomEmoji] = {
-    "generated_by_llm": ReactionTypeCustomEmoji(custom_emoji_id="👾"),
-    "toxic": ReactionTypeCustomEmoji(custom_emoji_id="🤮"),
+REACTION: Dict[str, ReactionTypeEmoji] = {
+    "generated_by_llm": ReactionTypeEmoji(emoji="👾"),
+    "toxic": ReactionTypeEmoji(emoji="🤮"),
 }
