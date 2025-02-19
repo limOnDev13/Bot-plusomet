@@ -6,9 +6,9 @@ import logging.config
 from typing import Any, Dict
 
 import redis.asyncio
-from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
+from dotenv import load_dotenv
 
 from producer_consumer.messages.redis_pc import RedisMessageProducer
 from producer_consumer.moderation_results.redis_pc import RedisModerationResultsConsumer

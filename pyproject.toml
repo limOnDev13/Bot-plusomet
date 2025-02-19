@@ -43,5 +43,6 @@ skip_glob = [
 [tool.mypy]
 exclude = [
     ".venv",
+    "bot"
 ]
 ignore_missing_imports = true

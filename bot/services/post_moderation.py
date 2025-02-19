@@ -1,14 +1,14 @@
 """The module responsible for processing the results of moderation."""
 
-from typing import List
 from logging import getLogger
+from typing import List
 
 from aiogram import Bot
 from aiogram.types.reaction_type_emoji import ReactionTypeEmoji
 
+from bot.config.bot_config import BotConfig
 from producer_consumer.moderation_results.base import BaseModerationResultConsumer
 from schemas.messages import ModerationResultSchema
-from bot.config.bot_config import BotConfig
 
 from .reactions import REACTION
 
@@ -71,12 +71,14 @@ class PostModerationManager(object):
         mod_result: ModerationResultSchema,
     ) -> None:
         """Set reaction depends on moderation result."""
-        reactions: List[ReactionTypeEmoji] = self.__get_reaction_depending_on_moderation(mod_result)
+        reactions: List[ReactionTypeEmoji] = (
+            self.__get_reaction_depending_on_moderation(mod_result)
+        )
         if reactions:
             await self.__bot.set_message_reaction(
                 chat_id=self.__chat_id,
                 message_id=int(mod_result.msg_id),
-                reaction=self.__get_reaction_depending_on_moderation(mod_result),
+                reaction=reactions,
             )
         else:
             logger.debug("No reactions.")

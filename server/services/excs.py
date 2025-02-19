@@ -32,7 +32,9 @@ class APIException(Exception):
 
     def __str__(self) -> str:
         """Return str of exception."""
-        res_str: str = f"Service: {self.service_name}\nStatus code: {self.status_code}\n"
+        res_str: str = (
+            f"Service: {self.service_name}\nStatus code: {self.status_code}\n"
+        )
         if self.msg:
             res_str += ", ".join((res_str, self.msg))
         if self.json_str:

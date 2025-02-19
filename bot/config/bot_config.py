@@ -30,6 +30,6 @@ def get_config() -> BotConfig:
         chat_id=os.getenv("BOT_CHAT_ID", ""),
         is_premium=os.getenv("BOT_IS_PREMIUM", "1") == "1",
         redis=RedisConfig(
-            url=os.getenv("REDIS_URL"),
+            url=os.getenv("REDIS_URL", "redis://localhost"),
         ),
     )

@@ -1,8 +1,8 @@
 """The module responsible for starting moderation."""
 
 import asyncio
-from logging import getLogger
 import logging.config
+from logging import getLogger
 from typing import Any, Dict
 
 import redis.asyncio
