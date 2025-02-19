@@ -13,7 +13,7 @@ from .base import BaseModerationResultConsumer, BaseModerationResultProducer
 class RedisModerationResultsConsumer(BaseModerationResultConsumer):
     """Redis-based moderation results Consumer."""
 
-    def __init__(self, redis_client: redis.asyncio.Redis, queue_name: str = "messages"):
+    def __init__(self, redis_client: redis.asyncio.Redis, queue_name: str = "moderation_results"):
         """
         Init class.
 
@@ -36,7 +36,7 @@ class RedisModerationResultsConsumer(BaseModerationResultConsumer):
 class RedisModerationResultsProducer(BaseModerationResultProducer):
     """Redis-based moderation results Producer."""
 
-    def __init__(self, redis_client: redis.asyncio.Redis, queue_name: str = "messages"):
+    def __init__(self, redis_client: redis.asyncio.Redis, queue_name: str = "moderation_results"):
         """
         Init class.
 
