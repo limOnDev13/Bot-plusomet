@@ -4,11 +4,11 @@ from typing import List
 from logging import getLogger
 
 from aiogram import Bot
-from aiogram.types.reaction_type_custom_emoji import ReactionTypeCustomEmoji
-from config.bot_config import BotConfig
+from aiogram.types.reaction_type_emoji import ReactionTypeEmoji
 
 from producer_consumer.moderation_results.base import BaseModerationResultConsumer
 from schemas.messages import ModerationResultSchema
+from bot.config.bot_config import BotConfig
 
 from .reactions import REACTION
 
@@ -39,7 +39,7 @@ class PostModerationManager(object):
     def __get_reaction_depending_on_moderation(
         self,
         mod_result: ModerationResultSchema,
-    ) -> List[ReactionTypeCustomEmoji]:
+    ) -> List[ReactionTypeEmoji]:
         """
         Return the reaction depending on the moderation.
 
@@ -47,17 +47,21 @@ class PostModerationManager(object):
 
         :return: Reaction.
         """
-        reactions: List[ReactionTypeCustomEmoji] = list()
+        reactions: List[ReactionTypeEmoji] = list()
 
         if self.__is_premium:
             if mod_result.generated_by_llm:
+                logger.debug("Message is generated.")
                 reactions.append(REACTION["generated_by_llm"])
             if mod_result.toxic:
+                logger.debug("Message is toxic.")
                 reactions.append(REACTION["toxic"])
         else:
             if mod_result.generated_by_llm:
+                logger.debug("Message is generated.")
                 reactions = [REACTION["generated_by_llm"]]
             if mod_result.toxic:
+                logger.debug("Message is toxic.")
                 reactions = [REACTION["toxic"]]
 
         return reactions
@@ -67,11 +71,15 @@ class PostModerationManager(object):
         mod_result: ModerationResultSchema,
     ) -> None:
         """Set reaction depends on moderation result."""
-        await self.__bot.set_message_reaction(
-            chat_id=self.__chat_id,
-            message_id=int(mod_result.msg_id),
-            reaction=self.__get_reaction_depending_on_moderation(mod_result),
-        )
+        reactions: List[ReactionTypeEmoji] = self.__get_reaction_depending_on_moderation(mod_result)
+        if reactions:
+            await self.__bot.set_message_reaction(
+                chat_id=self.__chat_id,
+                message_id=int(mod_result.msg_id),
+                reaction=self.__get_reaction_depending_on_moderation(mod_result),
+            )
+        else:
+            logger.debug("No reactions.")
 
     async def run(self):
         """
@@ -89,5 +97,4 @@ class PostModerationManager(object):
             )
 
             # process
-            logger.debug("Set reaction.")
             await self.__set_reaction(moderation_result)
