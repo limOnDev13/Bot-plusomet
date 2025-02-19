@@ -97,10 +97,10 @@ class YandexGPTAPI(BaseLLMAPI):
 
         response_json = response.json()
         logger.debug(
-            "LLM usage: inputTextTokens: %d, completionTokens: %d, totalTokens: %d",
-            response_json["result"]["usage"]["inputTextTokens"],
-            response_json["result"]["usage"]["completionTokens"],
-            response_json["result"]["usage"]["totalTokens"],
+            "LLM usage: inputTextTokens: %s, completionTokens: %s, totalTokens: %s",
+            str(response_json["result"]["usage"]["inputTextTokens"]),
+            str(response_json["result"]["usage"]["completionTokens"]),
+            str(response_json["result"]["usage"]["totalTokens"]),
         )
 
         llm_answers: List[Dict[str, Any]] = response_json["result"]["alternatives"]
