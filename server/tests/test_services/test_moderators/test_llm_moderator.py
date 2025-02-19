@@ -3,7 +3,7 @@
 import warnings
 from typing import List
 
-from server.schemas.messages import MessageSchema, ModerationResultSchema
+from schemas.messages import MessageSchema, ModerationResultSchema
 from server.services.moderators.llm_moderator import LLMModerator
 
 

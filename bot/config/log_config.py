@@ -3,7 +3,7 @@
 from copy import deepcopy
 from typing import Any, Dict
 
-from .app_config import Config
+from .bot_config import BotConfig
 
 LOG_CONFIG = {
     "version": 1,
@@ -21,7 +21,7 @@ LOG_CONFIG = {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "level": "INFO",
             "formatter": "base",
-            "filename": "server_logfile.log",
+            "filename": "bot_logfile.log",
             "backupCount": 3,
             "when": "d",
             "interval": 10,
@@ -29,7 +29,7 @@ LOG_CONFIG = {
         },
     },
     "loggers": {
-        "main": {
+        "bot": {
             "level": "DEBUG",
             "handlers": ["file", "console"],
             "propagate": False,
@@ -38,7 +38,7 @@ LOG_CONFIG = {
 }
 
 
-def get_log_config(config: Config) -> Dict[str, Any]:
+def get_log_config(config: BotConfig) -> Dict[str, Any]:
     """Return config for logging."""
     if not config.debug:
         log_config: Dict[str, Any] = deepcopy(LOG_CONFIG)

@@ -2,7 +2,7 @@
 
 import os
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import Tuple
 
 
 @dataclass
@@ -16,13 +16,19 @@ class YandexGPTConfig(object):
 
 
 @dataclass
-class CeleryConfig(object):
-    """Config for Celery."""
+class RedisConfig(object):
+    """Config class for Redis."""
 
-    broker_url: str
-    result_backed: str
-    accept_content: List[str]
-    result_expires: int
+    url: str
+
+
+@dataclass
+class ModerationConfig(object):
+    """Config for moderation."""
+
+    random_delay_limits: Tuple[float, float]
+    delay_denominator: float
+    max_num_retries: int
 
 
 @dataclass
@@ -30,9 +36,9 @@ class Config(object):
     """Config class for the app."""
 
     debug: bool
-    moderation_random_delay: Tuple[float, float]
+    moderation_config: ModerationConfig
     yandex_gpt: YandexGPTConfig
-    celery: CeleryConfig
+    redis: RedisConfig
 
 
 def __moderation_random_delay() -> Tuple[float, float]:
@@ -47,11 +53,11 @@ def __moderation_random_delay() -> Tuple[float, float]:
 
     if (
         moderation_max_delay_str is None
-        or float(moderation_max_delay_str) < moderation_min_delay
+        or abs(float(moderation_max_delay_str)) < moderation_min_delay
     ):
         moderation_max_delay = moderation_min_delay
     else:
-        moderation_max_delay = float(moderation_max_delay_str)
+        moderation_max_delay = abs(float(moderation_max_delay_str))
 
     return moderation_min_delay, moderation_max_delay
 
@@ -60,17 +66,18 @@ def get_config() -> Config:
     """Return app config."""
     return Config(
         debug=os.getenv("SERVER_DEBUG", "0") == "1",
-        moderation_random_delay=__moderation_random_delay(),
+        moderation_config=ModerationConfig(
+            random_delay_limits=__moderation_random_delay(),
+            delay_denominator=max(1.0, float(os.getenv("DELAY_DENOMINATOR", 2))),
+            max_num_retries=abs(int(os.getenv("MAX_NUM_RETRIES", 3))),
+        ),
         yandex_gpt=YandexGPTConfig(
             oauth_token=os.getenv("YANDEXGPT_OAUTH", ""),
             catalog_id=os.getenv("YANDEXGPT_CATALOG_ID", ""),
-            temperature=float(os.getenv("YANDEXGPT_TEMPERATURE", 0.3)),
-            max_tokens=int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000)),
+            temperature=abs(float(os.getenv("YANDEXGPT_TEMPERATURE", 0.3))),
+            max_tokens=abs(int(os.getenv("YANDEXGPT_MAX_TOKENS", 2000))),
         ),
-        celery=CeleryConfig(
-            broker_url=os.getenv("CELERY_BROKER", "redis://localhost:6379/0"),
-            result_backed=os.getenv("CELERY_BACKEND", "redis://localhost:6379/0"),
-            accept_content=os.getenv("CELERY_ACCEPT_CONTENT", "json,").split(","),
-            result_expires=int(os.getenv("CELERY_RESULT_EXPIRES", 3600)),
+        redis=RedisConfig(
+            url=os.getenv("REDIS_URL", ""),
         ),
     )

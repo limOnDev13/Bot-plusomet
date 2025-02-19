@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "celery[gevent]>=5.4.0",
+    "aiogram>=3.18.0",
     "python-dotenv>=1.0.1",
     "redis>=5.2.1",
     "requests>=2.32.3",
@@ -20,6 +20,7 @@ dev = [
     "isort>=6.0.0",
     "mypy>=1.15.0",
     "pytest>=8.3.4",
+    "types-redis>=4.6.0.20241004",
     "types-requests>=2.32.0.20241016",
 ]
 
@@ -42,5 +43,6 @@ skip_glob = [
 [tool.mypy]
 exclude = [
     ".venv",
+    "bot"
 ]
 ignore_missing_imports = true

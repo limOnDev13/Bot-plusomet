@@ -6,8 +6,8 @@ from typing import List
 import pytest
 from dotenv import load_dotenv
 
+from schemas.messages import MessageSchema
 from server.config.app_config import Config, get_config
-from server.schemas.messages import MessageSchema
 from server.services.api.llm.base import BaseLLMAPI
 from server.services.api.llm.yandex_gpt import YandexGPTAPI
 from server.services.moderators.llm_moderator import LLMModerator
@@ -30,9 +30,9 @@ def llm_api(config: Config) -> BaseLLMAPI:
 
 
 @pytest.fixture(scope="session")
-def llm_moderator(llm_api: BaseLLMAPI) -> LLMModerator:
+def llm_moderator(llm_api: BaseLLMAPI, config: Config) -> LLMModerator:
     """Get LLMModerator object."""
-    return LLMModerator(llm_api)
+    return LLMModerator(llm_api, config.moderation_config)
 
 
 @pytest.fixture(scope="session")
