@@ -21,7 +21,7 @@ LOG_CONFIG = {
             "class": "logging.handlers.TimedRotatingFileHandler",
             "level": "INFO",
             "formatter": "base",
-            "filename": "logfile.log",
+            "filename": "bot_logfile.log",
             "backupCount": 3,
             "when": "d",
             "interval": 10,
