@@ -1,6 +1,13 @@
 version = 1
 requires-python = ">=3.12"
 
+[manifest]
+members = [
+    "bot",
+    "bot-plusomet",
+    "server",
+]
+
 [[package]]
 name = "aiofiles"
 version = "24.1.0"
@@ -137,6 +144,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/e3/ee/adda3d46d4a9120772fae6de454c8495603c37c4c3b9c60f25b1ab6401fe/black-25.1.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:030b9759066a4ee5e5aca28c3c77f9c64789cdd4de8ac1df642c40b708be6171", size = 1782926 },
     { url = "https://files.pythonhosted.org/packages/cc/64/94eb5f45dcb997d2082f097a3944cfc7fe87e071907f677e80788a2d7b7a/black-25.1.0-cp313-cp313-win_amd64.whl", hash = "sha256:a22f402b410566e2d1c950708c77ebf5ebd5d0d88a6a2e87c86d9fb48afa0d18", size = 1442613 },
     { url = "https://files.pythonhosted.org/packages/09/71/54e999902aed72baf26bca0d50781b01838251a462612966e9fc4891eadd/black-25.1.0-py3-none-any.whl", hash = "sha256:95e8176dae143ba9097f351d174fdaf0ccd29efb414b362ae3fd72bf0f710717", size = 207646 },
+]
+
+[[package]]
+name = "bot"
+version = "0.1.0"
+source = { virtual = "bot" }
+dependencies = [
+    { name = "aiogram" },
+    { name = "redis" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiogram", specifier = ">=3.18.0" },
+    { name = "redis", specifier = ">=5.2.1" },
 ]
 
 [[package]]
@@ -739,6 +761,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/63/70/2bf7780ad2d390a8d301ad0b550f1581eadbd9a20f896afe06353c2a2913/requests-2.32.3.tar.gz", hash = "sha256:55365417734eb18255590a9ff9eb97e9e1da868d4ccd6402399eaf68af20a760", size = 131218 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl", hash = "sha256:70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6", size = 64928 },
+]
+
+[[package]]
+name = "server"
+version = "0.1.0"
+source = { virtual = "server" }
+dependencies = [
+    { name = "python-dotenv" },
+    { name = "redis" },
+    { name = "requests" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "redis", specifier = ">=5.2.1" },
+    { name = "requests", specifier = ">=2.32.3" },
 ]
 
 [[package]]

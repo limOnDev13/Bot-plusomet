@@ -46,3 +46,6 @@ exclude = [
     "bot"
 ]
 ignore_missing_imports = true
+
+[tool.uv.workspace]
+members = ["server", "bot"]

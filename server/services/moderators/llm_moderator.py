@@ -28,6 +28,10 @@ logger = getLogger("main.services.moderator")
 class LLMModerator(BaseModerator):
     """The class responsible for moderation of messages using LLM."""
 
+    prompt_wint_user_msg: str = (
+        "=== Начало сообщения для анализа ===\n{user_msg}\n=== Конец сообщения ==="
+    )
+
     def __init__(self, llm_api: BaseLLMAPI, config: ModerationConfig):
         """
         Init class.
@@ -79,10 +83,15 @@ class LLMModerator(BaseModerator):
         that cannot be converted to a ModerationResult
         """
         logger.debug("Start moderating message.")
+
         prompts: List[Prompt] = [
             PROMPTS["moderation_prompt"],
-            Prompt(role="user", text=message.text),
+            Prompt(
+                role="user",
+                text=self.prompt_wint_user_msg.format(user_msg=message.text),
+            ),
         ]
+
         answers: List[Prompt] = self.__llm_api.send_prompts(prompts)
 
         if len(answers) != 1:
@@ -97,10 +106,8 @@ class LLMModerator(BaseModerator):
             raise IncorrectFormatError(
                 prompts=prompts,
                 msg="LLM returned an answer in the wrong format",
-                expected=json.dumps(
-                    asdict(ModerationResultSchema("1", True, True)), indent=4
-                ),
-                received=json.dumps(processed_answer, indent=4),
+                expected=str(asdict(ModerationResultSchema("1", True, True))),
+                received=str(processed_answer),
             )
 
     def __sleep(self, retry_backoff: bool = False) -> None:
