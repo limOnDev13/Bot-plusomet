@@ -1,0 +1,51 @@
+[project]
+name = "bot-plusomet"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.18.0",
+    "python-dotenv>=1.0.1",
+    "redis>=5.2.1",
+    "requests>=2.32.3",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8>=7.1.1",
+    "flake8-docstrings>=1.7.0",
+    "flake8-eradicate>=1.5.0",
+    "isort>=6.0.0",
+    "mypy>=1.15.0",
+    "pytest>=8.3.4",
+    "types-redis>=4.6.0.20241004",
+    "types-requests>=2.32.0.20241016",
+]
+
+[tool.black]
+line-length = 88
+force-exclude = '''
+/(
+    \.venv
+)
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_gitignore = true
+skip_glob = [
+    "**/.venv/*"
+]
+
+[tool.mypy]
+exclude = [
+    ".venv",
+    "bot"
+]
+ignore_missing_imports = true
+
+[tool.uv.workspace]
+members = ["server", "bot"]
