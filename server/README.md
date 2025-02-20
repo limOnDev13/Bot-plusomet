@@ -1,0 +1,4 @@
+# Bot-plusomet (moderation server)
+
+## Description
+Moderation is based on the Producer/Consumer pattern based on Redis and LLM (Yandex GPS). The moderator bot puts messages in the Redis queue, the server takes the first message from the queue, sends prompta describing the analysis of the message and the message itself, and puts the result of moderation in another queue. If the message queue is empty, the server blocks execution. The server makes an occasional delay between requests to GPT so as not to overload the servers. In the future, it is planned to implement asynchronous requests to LLM. This will slow down the moderation process, but it will significantly reduce the cost of API requests to LLM.
