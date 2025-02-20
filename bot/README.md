@@ -1,0 +1,4 @@
+# Bot-plusomet (telegram bot)
+
+## Description
+The bot is written on the Aiogram framework. There is only one handler who receives all messages from the chat. As soon as the bot receives the message, it adds it to the queue for moderation. Asynchronously, it waits for the moderation results in another queue. As soon as the result is received, the bot sets a reaction to the message in accordance with the result of moderation. If the result queue is empty, the reaction establishment operation is blocked until the results are added to the queue. Since the bot is written asynchronously, blocking does not block receiving messages from the chat.
